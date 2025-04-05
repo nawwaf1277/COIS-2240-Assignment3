@@ -6,6 +6,12 @@ public class Truck extends Vehicle implements Rentable {
         if (cargoCapacity <= 0) throw new IllegalArgumentException("Cargo capacity must be > 0");
         this.cargoCapacity = cargoCapacity;
     }
+    
+    public Truck(String licensePlate, String make, String model, int year) {
+        super(licensePlate, make, model, year);
+        this.cargoCapacity = 1000.0; // Default cargo capacity
+    }
+
 
     public double getCargoCapacity() {
         return cargoCapacity;

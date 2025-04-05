@@ -1,6 +1,16 @@
 import java.util.List;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Scanner;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Scanner;
 
 public class RentalSystem {
     private static RentalSystem instance = null; 
@@ -118,7 +128,7 @@ public class RentalSystem {
                     String make = data[1];
                     String model = data[2];
                     int year = Integer.parseInt(data[3]);
-                    vehicles.add(new Vehicle(plate, make, model, year));
+                    vehicles.add(new Car(plate, make, model, year));
                 }
             }
         } catch (Exception e) {
@@ -184,4 +194,38 @@ public class RentalSystem {
     public RentalHistory getRentalHistory() {
         return rentalHistory;
     }
+    
+    public void displayAvailableVehicles() {
+        System.out.println("Available Vehicles:");
+        for (Vehicle v : vehicles) {
+            if (v.getStatus() == Vehicle.VehicleStatus.AVAILABLE) {
+                System.out.println(v.getInfo());
+            }
+        }
+    }
+    public void displayAllCustomers() {
+        System.out.println("Registered Customers:");
+        for (Customer c : customers) {
+            System.out.println(c.getCustomerId() + " - " + c.getCustomerName());
+        }
+    }
+    public Customer findCustomerByName(String name) {
+        for (Customer c : customers) {
+            if (c.getCustomerName().equalsIgnoreCase(name)) {
+                return c;
+            }
+        }
+        return null;
+    }
+    public void displayRentalHistory() {
+        System.out.println("Rental History:");
+        for (RentalRecord r : rentalHistory.getRecords()) {
+            System.out.println(r.getVehicle().getLicensePlate() + " | " +
+                               r.getCustomer().getCustomerName() + " | " +
+                               r.getDate() + " | " +
+                               r.getAmount() + " | " +
+                               r.getAction());
+        }
+    }
+
 }
