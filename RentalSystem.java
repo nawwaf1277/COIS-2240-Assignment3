@@ -10,8 +10,9 @@ public class RentalSystem {
     private RentalHistory rentalHistory = new RentalHistory();
     
     private RentalSystem() {
-    
+        loadData(); // Load saved data at program start
     }
+
     
     public static RentalSystem getInstance() {
         if (instance == null) {
@@ -20,86 +21,116 @@ public class RentalSystem {
         return instance;
     }
 
-    public void addVehicle(Vehicle vehicle) {
+ // 🔹 Task 1.2: Add vehicle and save to file
+    public boolean addVehicle(Vehicle vehicle) {
+        if (findVehicleByPlate(vehicle.getLicensePlate()) != null) {
+            System.out.println("Duplicate vehicle: Plate already exists.");
+            return false;
+        }
         vehicles.add(vehicle);
+        saveVehicle(vehicle);  // Save to file
+        return true;
     }
 
-    public void addCustomer(Customer customer) {
+    // 🔹 Task 1.2: Add customer and save to file
+    public boolean addCustomer(Customer customer) {
+        if (findCustomerById(customer.getCustomerId()) != null) {
+            System.out.println("Duplicate customer: ID already exists.");
+            return false;
+        }
         customers.add(customer);
+        saveCustomer(customer);  // Save to file
+        return true;
     }
 
-    public void rentVehicle(Vehicle vehicle, Customer customer, LocalDate date, double amount) {
+    // 🔹 Task 1.2: Rent vehicle and save rental record
+    public boolean rentVehicle(Vehicle vehicle, Customer customer, LocalDate date, double amount) {
         if (vehicle.getStatus() == Vehicle.VehicleStatus.AVAILABLE) {
             vehicle.setStatus(Vehicle.VehicleStatus.RENTED);
-            rentalHistory.addRecord(new RentalRecord(vehicle, customer, date, amount, "RENT"));
+            RentalRecord record = new RentalRecord(vehicle, customer, date, amount, "RENT");
+            rentalHistory.addRecord(record);
+            saveRecord(record);  // Save to file
             System.out.println("Vehicle rented to " + customer.getCustomerName());
-        }
-        else {
+            return true;
+        } else {
             System.out.println("Vehicle is not available for renting.");
+            return false;
         }
     }
 
-    public void returnVehicle(Vehicle vehicle, Customer customer, LocalDate date, double extraFees) {
+    // 🔹 Task 1.2: Return vehicle and save rental record
+    public boolean returnVehicle(Vehicle vehicle, Customer customer, LocalDate date, double amount) {
         if (vehicle.getStatus() == Vehicle.VehicleStatus.RENTED) {
             vehicle.setStatus(Vehicle.VehicleStatus.AVAILABLE);
-            rentalHistory.addRecord(new RentalRecord(vehicle, customer, date, extraFees, "RETURN"));
+            RentalRecord record = new RentalRecord(vehicle, customer, date, amount, "RETURN");
+            rentalHistory.addRecord(record);
+            saveRecord(record);  // Save to file
             System.out.println("Vehicle returned by " + customer.getCustomerName());
-        }
-        else {
-            System.out.println("Vehicle is not rented.");
-        }
-    }    
-
-    public void displayAvailableVehicles() {
-    	System.out.println("|     Type         |\tPlate\t|\tMake\t|\tModel\t|\tYear\t|");
-    	System.out.println("---------------------------------------------------------------------------------");
-    	 
-        for (Vehicle v : vehicles) {
-            if (v.getStatus() == Vehicle.VehicleStatus.AVAILABLE) {
-                System.out.println("|     " + (v instanceof Car ? "Car          " : "Motorcycle   ") + "|\t" + v.getLicensePlate() + "\t|\t" + v.getMake() + "\t|\t" + v.getModel() + "\t|\t" + v.getYear() + "\t|\t");
-            }
-        }
-        System.out.println();
-    }
-    
-    public void displayAllVehicles() {
-        for (Vehicle v : vehicles) {
-            System.out.println("  " + v.getInfo());
+            return true;
+        } else {
+            System.out.println("Vehicle was not rented.");
+            return false;
         }
     }
 
-    public void displayAllCustomers() {
-        for (Customer c : customers) {
-            System.out.println("  " + c.toString());
+    // 🔹 Task 1.2: Save vehicle to vehicles.txt
+    private void saveVehicle(Vehicle vehicle) {
+        try (PrintWriter out = new PrintWriter(new FileWriter("vehicles.txt", true))) {
+            out.println(vehicle.getLicensePlate() + "," +
+                        vehicle.getMake() + "," +
+                        vehicle.getModel() + "," +
+                        vehicle.getYear());
+        } catch (IOException e) {
+            System.out.println("Error saving vehicle: " + e.getMessage());
         }
     }
-    
-    public void displayRentalHistory() {
-        for (RentalRecord record : rentalHistory.getRentalHistory()) {
-            System.out.println(record.toString());
+
+    // 🔹 Task 1.2: Save customer to customers.txt
+    private void saveCustomer(Customer customer) {
+        try (PrintWriter out = new PrintWriter(new FileWriter("customers.txt", true))) {
+            out.println(customer.getCustomerId() + "," + customer.getCustomerName());
+        } catch (IOException e) {
+            System.out.println("Error saving customer: " + e.getMessage());
         }
     }
-    
+
+    // 🔹 Task 1.2: Save rental record to rental_records.txt
+    private void saveRecord(RentalRecord record) {
+        try (PrintWriter out = new PrintWriter(new FileWriter("rental_records.txt", true))) {
+            out.println(record.getVehicle().getLicensePlate() + "," +
+                        record.getCustomer().getCustomerId() + "," +
+                        record.getDate() + "," +
+                        record.getAmount() + "," +
+                        record.getAction());
+        } catch (IOException e) {
+            System.out.println("Error saving record: " + e.getMessage());
+        }
+    }
+
+    // 🔹 Support methods
     public Vehicle findVehicleByPlate(String plate) {
         for (Vehicle v : vehicles) {
-            if (v.getLicensePlate().equalsIgnoreCase(plate)) {
-                return v;
-            }
+            if (v.getLicensePlate().equals(plate)) return v;
         }
         return null;
     }
-    
-    public Customer findCustomerById(int id) {
-        for (Customer c : customers)
-            if (c.getCustomerId() == id)
-                return c;
+
+    public Customer findCustomerById(String id) {
+        for (Customer c : customers) {
+            if (c.getCustomerId().equals(id)) return c;
+        }
         return null;
     }
 
-    public Customer findCustomerByName(String name) {
-        for (Customer c : customers)
-            if (c.getCustomerName().equalsIgnoreCase(name))
-                return c;
-        return null;
+    public List<Vehicle> getVehicles() {
+        return vehicles;
+    }
+
+    public List<Customer> getCustomers() {
+        return customers;
+    }
+
+    public RentalHistory getRentalHistory() {
+        return rentalHistory;
     }
 }
