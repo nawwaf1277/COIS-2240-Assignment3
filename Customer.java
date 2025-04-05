@@ -1,22 +1,17 @@
 public class Customer {
-    private int customerId;
-    private String name;
-
+    private String customerId;  // 
+    private String customerName;  // 
+    
     public Customer(String customerId, String customerName) {
         this.customerId = customerId;
         this.customerName = customerName;
     }
 
-    public int getCustomerId() {
-    	return customerId;
+    public String getCustomerId() {
+        return customerId;
     }
 
     public String getCustomerName() {
-    	return name;
-    }
-
-    @Override
-    public String toString() {
-        return "Customer ID: " + customerId + " | Name: " + name;
+        return customerName;
     }
 }

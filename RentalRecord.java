@@ -15,14 +15,26 @@ public class RentalRecord {
         this.recordType = recordType;
     }
 
-    public Customer getCustomer(){
-    	return customer;
+    public Customer getCustomer() {
+        return customer;
     }
-    
-    public Vehicle getVehicle(){
-    	return vehicle;
+
+    public Vehicle getVehicle() {
+        return vehicle;
     }
-    
+
+    public LocalDate getDate() {
+        return recordDate;
+    }
+
+    public double getAmount() {
+        return totalAmount;
+    }
+
+    public String getAction() {
+        return recordType;
+    }
+
     @Override
     public String toString() {
         return recordType + " | Plate: " + vehicle.getLicensePlate() + 

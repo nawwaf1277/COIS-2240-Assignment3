@@ -8,7 +8,7 @@ public class RentalHistory {
         rentalRecords.add(record);
     }
 
-    public List<RentalRecord> getRentalHistory() {
+    public List<RentalRecord> getRecords() {
         return rentalRecords;
     }
 
