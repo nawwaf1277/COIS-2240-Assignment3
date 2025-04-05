@@ -107,6 +107,57 @@ public class RentalSystem {
         }
     }
 
+    // 🔹 Load saved data on startup (Task 1.3)
+    private void loadData() {
+        // Load vehicles
+        try (Scanner sc = new Scanner(new File("vehicles.txt"))) {
+            while (sc.hasNextLine()) {
+                String[] data = sc.nextLine().split(",");
+                if (data.length == 4) {
+                    String plate = data[0];
+                    String make = data[1];
+                    String model = data[2];
+                    int year = Integer.parseInt(data[3]);
+                    vehicles.add(new Vehicle(plate, make, model, year));
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error loading vehicles: " + e.getMessage());
+        }
+
+        // Load customers
+        try (Scanner sc = new Scanner(new File("customers.txt"))) {
+            while (sc.hasNextLine()) {
+                String[] data = sc.nextLine().split(",");
+                if (data.length == 2) {
+                    String id = data[0];
+                    String name = data[1];
+                    customers.add(new Customer(id, name));
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error loading customers: " + e.getMessage());
+        }
+
+        // Load rental records
+        try (Scanner sc = new Scanner(new File("rental_records.txt"))) {
+            while (sc.hasNextLine()) {
+                String[] data = sc.nextLine().split(",");
+                if (data.length == 5) {
+                    Vehicle v = findVehicleByPlate(data[0]);
+                    Customer c = findCustomerById(data[1]);
+                    LocalDate date = LocalDate.parse(data[2]);
+                    double amount = Double.parseDouble(data[3]);
+                    String action = data[4];
+                    RentalRecord r = new RentalRecord(v, c, date, amount, action);
+                    rentalHistory.addRecord(r);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error loading rental records: " + e.getMessage());
+        }
+    }
+
     // 🔹 Support methods
     public Vehicle findVehicleByPlate(String plate) {
         for (Vehicle v : vehicles) {
