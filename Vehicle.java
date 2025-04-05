@@ -4,28 +4,30 @@ public abstract class Vehicle {
     private String model;
     private int year;
     private VehicleStatus status;
+    
+    private String capitalize(String input) {
+        if (input == null || input.trim().isEmpty()) return "";
+        input = input.trim();
+        return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
+    }
+
 
     public enum VehicleStatus { AVAILABLE, RESERVED, RENTED, MAINTENANCE, OUTOFSERVICE }
 
-    public Vehicle(String make, String model, int year) {
-    	if (make == null || make.isEmpty())
-    		this.make = null;
-    	else
-    		this.make = make.substring(0, 1).toUpperCase() + make.substring(1).toLowerCase();
-    	
-    	if (model == null || model.isEmpty())
-    		this.model = null;
-    	else
-    		this.model = model.substring(0, 1).toUpperCase() + model.substring(1).toLowerCase();
-    	
+    public Vehicle(String licensePlate, String make, String model, int year) {
+        this.licensePlate = licensePlate;
+        
+        this.make = capitalize(make);
+        this.model = capitalize(model);
+
         this.year = year;
         this.status = VehicleStatus.AVAILABLE;
-        this.licensePlate = null;
     }
 
     public Vehicle() {
-        this(null, null, 0);
+        this(null, null, null, 0);
     }
+
 
     public void setLicensePlate(String plate) {
         this.licensePlate = plate == null ? null : plate.toUpperCase();
