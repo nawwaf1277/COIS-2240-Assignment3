@@ -5,12 +5,6 @@ public class Motorcycle extends Vehicle implements Rentable {
         super(make, model, year);
         this.hasSidecar = hasSidecar;
     }
-    
-    public Motorcycle(String licensePlate, String make, String model, int year) {
-        super(licensePlate, make, model, year);
-        this.hasSidecar = false; // default
-    }
-
 
     public boolean hasSidecar() {
         return hasSidecar;
